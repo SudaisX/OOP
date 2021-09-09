@@ -1,32 +1,27 @@
 #include <iostream>
 using namespace std;
 
+void printTerm(int i, int n, int term) {
+    if (i == n) {
+        cout << term;
+    } else {
+        cout << term << ", ";
+    }
+}
+
 void series(int t1, int t2, int n) {
     int next;
 
     for (int i = 0; i <= n; i++) {
         if (i == 0) {
-            if (i == n) {
-                cout << t1;
-            } else {
-                cout << t1 << ", ";
-            }
+            printTerm(i, n, t1);
         } else if (i == 1) {
-            if (i == n) {
-                cout << t2;
-            } else {
-                cout << t2 << ", ";
-            }
+            printTerm(i, n, t2);
         } else {
             next = t1 + t2;
             t1 = t2;
             t2 = next;
-
-            if (i == n) {
-                cout << next;
-            } else {
-                cout << next << ", ";
-            }
+            printTerm(i, n, next);
         }
     }
 }
