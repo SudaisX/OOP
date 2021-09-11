@@ -14,12 +14,10 @@ int countHoles(int num) {
             holes += 2;
         }
     }
-
     return holes;
 }
 
 int main() {
-    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
     int num;
     cin >> num;
     cout << countHoles(num) << " holes";
