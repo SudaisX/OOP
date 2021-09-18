@@ -3,27 +3,11 @@
 #include "mover.hpp"
 
 // Stub Functions
-void enchantedEast();     // To move to the East of Enchanted Forest
-void enchantedWest();     // To move to the West of Enchanted Forest
-void enchantedSouth();    // To move to the South of Enchanted Forest
-void bridgeWest();        // To move to the West of Bridge of Death
-void bridgeEast();        // To move to the East of Bridge of Death
-void swampsWest();        // To move to the West of Swamps of Despair
-void wampireWest();       // To move to the West of Wampire Cove
-void wampireEast();       // To move to the East of Wampire Cove
-void wampireNorth();      // To move to the North of Wampire Cove
-void wampireSouth();      // To move to the South of Wampire Cove
-void applesOrchadEast();  // To move to the East of Apples Orchard
-void marshWest();         // To move to the West of Marsh of Undead
-void marshSouth();        // To move to the South of Marsh of Undead
-void werewolfWest();      // To move to the West of Werewolf Hil
-void werewolfEast();      // To move to the East of Werewolf Hil
-void werewolfNorth();     // To move to the North of Werewolf Hil
-void elvinEast();         // To move to the East of Elvin Waterfall
-void elvinWest();         // To move to the West of Elvin Waterfall
-void eistenNorth();       // To move to the North of Eisten Tunnel
-void eistenEast();        // To move to the East of Eisten Tunnel
-void invalidMove();       // To check Invalid Move
+void checkForCrystal(string currLocation);
+void checkForApples(string currLocation);
+void checkDirectionAndMove(string direction);
+void moveTo(string direction, string location, int appleFee);
+void invalidMove();  // To check Invalid Move
 
 // Crystals
 int nCrystalsFound = 0;        // Initialized with 0 crystals
@@ -34,6 +18,7 @@ bool eistenCrystal = false;    // Boolean Condition to check if Crystal has been
 
 // Initializing Apples
 int applesLeft = 20;
+bool applesBonusAvailed = false;
 
 // Initializing Game State
 string gameState = "Running";  // Running, Won, Lost
@@ -59,19 +44,19 @@ void makeMove(string direction) {
         if (direction == "East") {  // When Right Arrow is pressed
             // Conditions to Check where the current location is then appropriate moving function is called
             if (currLocation == enchantedForest) {
-                enchantedEast();
+                moveTo(direction, swampsOfDespair, 1);
             } else if (currLocation == bridgeOfDeath) {
-                bridgeEast();
+                moveTo(direction, enchantedForest, 2);
             } else if (currLocation == ApplesOrchard) {
-                applesOrchadEast();
+                moveTo(direction, wampireCove, 1);
             } else if (currLocation == wampireCove) {
-                wampireEast();
+                moveTo(direction, marshOfUndead, 1);
             } else if (currLocation == werewolfHill) {
-                werewolfEast();
+                moveTo(direction, sandsOfQuick, 1);
             } else if (currLocation == elvinWaterfall) {
-                elvinEast();
+                moveTo(direction, werewolfHill, 2);
             } else if (currLocation == eistenTunnel) {
-                eistenEast();
+                moveTo(direction, elvinWaterfall, 2);
             } else {
                 invalidMove();  // Invalid Move if there is no valid move
             }
@@ -79,19 +64,21 @@ void makeMove(string direction) {
         } else if (direction == "West") {  //When Left Arrow is pressed
             // Conditions to Check where the current location is then appropriate moving function is called
             if (currLocation == enchantedForest) {
-                enchantedWest();
+                moveTo(direction, bridgeOfDeath, 2);
             } else if (currLocation == bridgeOfDeath) {
-                bridgeWest();
+                if (nCrystalsFound >= 4) {
+                    moveTo(direction, wizardCastle, 6);
+                }
             } else if (currLocation == swampsOfDespair) {
-                swampsWest();
+                moveTo(direction, enchantedForest, 1);
             } else if (currLocation == wampireCove) {
-                wampireWest();
+                moveTo(direction, ApplesOrchard, 1);
             } else if (currLocation == marshOfUndead) {
-                marshWest();
+                moveTo(direction, wampireCove, 1);
             } else if (currLocation == werewolfHill) {
-                werewolfWest();
+                moveTo(direction, elvinWaterfall, 2);
             } else if (currLocation == elvinWaterfall) {
-                elvinWest();
+                moveTo(direction, eistenTunnel, 2);
             } else {
                 invalidMove();  // Invalid Move if there is no valid move
             }
@@ -99,11 +86,13 @@ void makeMove(string direction) {
         } else if (direction == "North") {  //When Up Arrow is pressed
             // Conditions to Check where the current location is then appropriate moving function is called
             if (currLocation == wampireCove) {
-                wampireNorth();
+                moveTo(direction, enchantedForest, 3);
             } else if (currLocation == werewolfHill) {
-                werewolfNorth();
+                moveTo(direction, wampireCove, 3);
             } else if (currLocation == eistenTunnel) {
-                eistenNorth();
+                if (nCrystalsFound >= 3) {
+                    moveTo(direction, wizardCastle, 10);
+                }
             } else {
                 invalidMove();  // Invalid Move if there is no valid move
             }
@@ -111,11 +100,11 @@ void makeMove(string direction) {
         } else if (direction == "South") {  //When Down Arrow is pressed
             // Conditions to Check where the current location is then appropriate moving function is called
             if (currLocation == enchantedForest) {
-                enchantedSouth();
+                moveTo(direction, wampireCove, 3);
             } else if (currLocation == wampireCove) {
-                wampireSouth();
+                moveTo(direction, werewolfHill, 3);
             } else if (currLocation == marshOfUndead) {
-                marshSouth();
+                moveTo(direction, sandsOfQuick, 1);
             } else {
                 invalidMove();  // Invalid Move if there is no valid move
             }
@@ -123,272 +112,36 @@ void makeMove(string direction) {
     }
 }
 
-void enchantedEast() {
-    int appleFee = 1;              // Apple fee to move to a location
+void moveTo(string direction, string location, int appleFee) {
     if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveEast();
-        if (!swampCrystal) {  // Check if the Crystal has already been found here, if not then add 1 to the total crystal count and set the crystal's boolean condition to true
-            nCrystalsFound++;
-            swampCrystal = true;
-        }
-        applesLeft -= appleFee;
-        currLocation = swampsOfDespair;  // Set the new curLocation to the location player just moved to
-    } else {                             // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void enchantedWest() {
-    int appleFee = 2;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveWest();
-        applesLeft -= appleFee;
-        currLocation = bridgeOfDeath;  // Set the new curLocation to the location player just moved to
-    } else {                           // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void enchantedSouth() {
-    int appleFee = 3;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveSouth();
-        applesLeft -= appleFee;
-        currLocation = wampireCove;  // Set the new curLocation to the location player just moved to
-    } else {                         // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void bridgeWest() {
-    int appleFee = 5;  // Apple fee to move to a location
-    if (nCrystalsFound == 4) {
-        if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-            moveWest();
-            applesLeft -= appleFee;
-            currLocation = wizardCastle;  // Set the new curLocation to the location player just moved to
-            gameState = "Won";
-        } else {  // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-            applesLeft = 0;
-            gameState = "Lost";
-        }
-    }
-}
-
-void bridgeEast() {
-    int appleFee = 2;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveEast();
-        applesLeft -= appleFee;
-        currLocation = enchantedForest;  // Set the new curLocation to the location player just moved to
-    } else {                             // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void swampsWest() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveWest();
-        applesLeft -= appleFee;
-        currLocation = enchantedForest;  // Set the new curLocation to the location player just moved to
-    } else {                             // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-};
-
-bool applesBonusAvailed = false;
-void wampireWest() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveWest();
-        applesLeft -= appleFee;
-        // Check if the Apples bonus has already been availed, if not then add 6 apples
-        if (!applesBonusAvailed) {
-            applesLeft += 6;
-            applesBonusAvailed = true;
-        }
-        currLocation = ApplesOrchard;  // Set the new curLocation to the location player just moved to
-    } else {                           // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void wampireEast() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveEast();
-        applesLeft -= appleFee;
-        if (!marshCrystal) {  // Check if the Crystal has already been found here, if not then add 1 to the total crystal count and set the crystal's boolean condition to true
-            nCrystalsFound++;
-            marshCrystal = true;
-        }
-        currLocation = marshOfUndead;  // Set the new curLocation to the location player just moved to
-    } else {                           // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void wampireNorth() {
-    int appleFee = 3;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveNorth();
-        applesLeft -= appleFee;
-        currLocation = enchantedForest;  // Set the new curLocation to the location player just moved to
-    } else {                             // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void wampireSouth() {
-    int appleFee = 3;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveSouth();
-        applesLeft -= appleFee;
-        if (!werewolfCrystal) {  // Check if the Crystal has already been found here, if not then add 1 to the total crystal count and set the crystal's boolean condition to true
-            nCrystalsFound++;
-            werewolfCrystal = true;
-        }
-        currLocation = werewolfHill;  // Set the new curLocation to the location player just moved to
-    } else {                          // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void applesOrchadEast() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveEast();
-        applesLeft -= appleFee;
-        currLocation = wampireCove;  // Set the new curLocation to the location player just moved to
-    } else {                         // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void marshWest() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveWest();
-        applesLeft -= appleFee;
-        if (!marshCrystal) {  // Check if the Crystal has already been found here, if not then add 1 to the total crystal count and set the crystal's boolean condition to true
-            nCrystalsFound++;
-            marshCrystal = true;
-        }
-        currLocation = wampireCove;  // Set the new curLocation to the location player just moved to
-    } else {                         // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void marshSouth() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveSouth();
-        applesLeft -= appleFee;
-        currLocation = sandsOfQuick;  // Set the new curLocation to the location player just moved to
-        gameState = "Lost";
-    }
-}
-
-void werewolfWest() {
-    int appleFee = 2;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveWest();
-        applesLeft -= appleFee;
-        currLocation = elvinWaterfall;  // Set the new curLocation to the location player just moved to
-    } else {                            // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void werewolfEast() {
-    int appleFee = 1;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveEast();
-        applesLeft -= appleFee;
-        currLocation = sandsOfQuick;  // Set the new curLocation to the location player just moved to
-        gameState = "Lost";
-    }
-}
-
-void werewolfNorth() {
-    int appleFee = 3;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveNorth();
-        applesLeft -= appleFee;
-        currLocation = wampireCove;  // Set the new curLocation to the location player just moved to
-    } else {                         // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void elvinEast() {
-    int appleFee = 2;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveEast();
-        applesLeft -= appleFee;
-        currLocation = werewolfHill;  // Set the new curLocation to the location player just moved to
-    } else {                          // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void elvinWest() {
-    int appleFee = 2;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
-        moveWest();
-        applesLeft -= appleFee;
-        if (!eistenCrystal) {  // Check if the Crystal has already been found here, if not then add 1 to the total crystal count and set the crystal's boolean condition to true
-            nCrystalsFound++;
-            eistenCrystal = true;
-        }
-        currLocation = eistenTunnel;  // Set the new curLocation to the location player just moved to
-    } else {                          // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
-    }
-}
-
-void eistenNorth() {
-    int appleFee = 10;  // Apple fee to move to a location
-    if (nCrystalsFound >= 3) {
-        if (applesLeft >= appleFee) {  // Check if there are enough apples to move
+        if (currLocation == eistenTunnel && location == wizardCastle) {
             moveNorth();
-            moveNorth();
-            applesLeft -= appleFee;
-            currLocation = wizardCastle;  // Set the new curLocation to the location player just moved to
-            gameState = "Won";
-        } else {  // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-            applesLeft = 0;
-            gameState = "Lost";
         }
+        checkDirectionAndMove(direction);
+        applesLeft -= appleFee;
+        currLocation = location;  // Set the new curLocation to the location player just moved to
+        checkForCrystal(currLocation);
+        checkForApples(currLocation);
+    } else {  // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
+        applesLeft = 0;
+        gameState = "Lost";
+    }
+    if (currLocation == sandsOfQuick) {
+        gameState = "Lost";
+    } else if (currLocation == wizardCastle) {
+        gameState = "Won";
     }
 }
 
-void eistenEast() {
-    int appleFee = 2;              // Apple fee to move to a location
-    if (applesLeft >= appleFee) {  // Check if there are enough apples to move
+void checkDirectionAndMove(string direction) {
+    if (direction == "East") {
         moveEast();
-        applesLeft -= appleFee;
-        currLocation = elvinWaterfall;  // Set the new curLocation to the location player just moved to
-    } else {                            // If you have no apples or dont have enough apples to move then you die of starvation and game is lost
-        applesLeft = 0;
-        gameState = "Lost";
+    } else if (direction == "West") {
+        moveWest();
+    } else if (direction == "North") {
+        moveNorth();
+    } else if (direction == "South") {
+        moveSouth();
     }
 }
 
@@ -399,5 +152,38 @@ void invalidMove() {
         applesLeft--;
         applesLeft = 0;
         gameState = "Lost";
+    }
+}
+
+void checkForCrystal(string currLocation) {
+    if (currLocation == swampsOfDespair) {
+        if (!swampCrystal) {
+            nCrystalsFound++;
+            swampCrystal = true;
+        }
+    } else if (currLocation == marshOfUndead) {
+        if (!marshCrystal) {
+            nCrystalsFound++;
+            marshCrystal = true;
+        }
+    } else if (currLocation == werewolfHill) {
+        if (!werewolfCrystal) {
+            nCrystalsFound++;
+            werewolfCrystal = true;
+        }
+    } else if (currLocation == eistenTunnel) {
+        if (!eistenCrystal) {
+            nCrystalsFound++;
+            eistenCrystal = true;
+        }
+    }
+}
+
+void checkForApples(string currLocation) {
+    if (currLocation == ApplesOrchard) {
+        if (!applesBonusAvailed) {
+            applesLeft += 6;
+            applesBonusAvailed = true;
+        }
     }
 }
