@@ -1,20 +1,15 @@
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include "truck.hpp"
-#include "box.hpp"
-#include "truckDelivery.hpp"
 
+#include <iostream>
+
+#include "box.hpp"
+#include "truck.hpp"
+#include "truckDelivery.hpp"
 
 using namespace std;
 
-
-
-
-
-
-int main()
-{
+int main() {
     TruckDelivery delivery;
     delivery.loadTrucks();
     delivery.calculateCost();

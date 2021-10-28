@@ -1,7 +1,6 @@
 #pragma once
 #include "box.hpp"
-class Truck
-{
+class Truck {
     string driver;
     int petrol;
     int money;
@@ -13,4 +12,3 @@ class Truck
     void unload();
     float cost();
 };
-

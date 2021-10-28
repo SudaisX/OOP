@@ -1,13 +1,14 @@
-#include "truck.hpp"
 #include <vector>
+
+#include "truck.hpp"
 using namespace std;
 
-class TruckDelivery{
+class TruckDelivery {
     vector<Truck> trucks;
-public:
+
+   public:
     void loadTrucks();
     void calculateCost();
     void makeJourney();
     void unloadTrucks();
 };
-	

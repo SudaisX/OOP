@@ -1,13 +1,13 @@
 #pragma once
-#include<iostream>
+#include <iostream>
 using namespace std;
 
-class Box
-{
+class Box {
     int length;
     int width;
     int height;
-public:
+
+   public:
     Box();
 
     int volume();
