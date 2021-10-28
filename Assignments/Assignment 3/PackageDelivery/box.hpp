@@ -8,7 +8,19 @@ class Box {
     int height;
 
    public:
-    Box();
+    Box() {  // Generate random l, w, h between 5 and 30
+        length = (rand() % 25) + 5;
+        width = (rand() % 25) + 5;
+        height = (rand() % 25) + 5;
+    }
 
-    int volume();
+    int volume() {  // generate volume
+        return length * width * height;
+    }
+
+    void load() {  // print and load the boxes with
+        cout << " ( " << length << ", " << width << ", " << height << " ) "
+             << "Volume: "
+             << volume() << endl;
+    }
 };

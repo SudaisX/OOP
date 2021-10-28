@@ -15,5 +15,6 @@ int main() {
     delivery.calculateCost();
     delivery.makeJourney();
     delivery.unloadTrucks();
+    system("pause");
     return 0;
 }

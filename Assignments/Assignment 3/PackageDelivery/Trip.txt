@@ -1,0 +1,35 @@
+Elton John
+42.381
+174.32
+9
+7
+John Cena
+42.2727
+288.35
+11
+6
+Barrack Obama
+43.6667
+786.26
+10
+9
+John Rambo
+39
+403.59
+6
+5
+Justin Beiber
+17.4588
+0
+8
+7
+Hillary Clinton
+42.987
+1866.23
+11
+7
+Donald Trump
+44.7727
+897.27
+12
+11
